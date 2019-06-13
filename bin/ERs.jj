@@ -1,0 +1,243 @@
+options
+{
+  static = false;
+  DEBUG_PARSER = true;
+}
+
+PARSER_BEGIN(ERs)
+import java.io.FileInputStream;
+import java.io.File;
+import java.io.IOException;
+
+public class ERs
+{
+  public static void main(String args []) throws ParseException
+  {
+    try
+    {
+      System.out.println("Lendo arquivo fonte...");
+      FileInputStream fis = new FileInputStream(new File("..//JavaCC//src//fonte.txt"));
+      ERs parser = new ERs(fis);
+      parser.Start();
+      System.out.println("Arquivo fonte processado corretamente!");
+    }
+    catch (IOException e)
+    {
+      System.out.println("Falha ao abrir arquivo fonte.");
+      System.exit(0);
+    }
+  }
+}
+
+PARSER_END(ERs)
+
+
+SKIP : { " "| "\t" | "\n" | "\r" }
+
+
+TOKEN : { < SAIDA : "mostra" > }
+
+TOKEN : { < ENTRADA : "pegaavisao" > }
+
+TOKEN : { < JOGALA : "jogala" > }
+
+
+TOKEN : { < WHILE : "vaisegurando" > }
+
+
+TOKEN: { < SWITCH : "switch" > }
+
+
+TOKEN: { < CASE : "case" > }
+
+
+TOKEN: { < BREAK : "break" > }
+
+
+TOKEN: {< FOR : "logoali" >}
+
+
+TOKEN : { < IF : "sepa" > }
+
+
+TOKEN : { < ELSE : "senaopa" > }
+
+
+TOKEN : { < ELSEIF : "senaosepa" > }
+
+
+
+TOKEN: { < FUNCAO : "procedimento" > }
+
+
+
+TOKEN: {< VIRGULA : "," >}
+
+
+TOKEN : { < PONTO : "." >  }
+
+TOKEN : { < TXT : "txt" >  }
+
+
+
+TOKEN : { < #L: ["a"-"z","A"-"Z"] > |
+		  < #D: ["0"-"9"]  > }
+		  
+		  
+TOKEN : { < RACIO : (["0"-"9"])+","(["0"-"9"])+ > }
+
+
+TOKEN : { < OP : ( < ADD > | < SUB > | < MUL > | < DIV > | < MOD > ) > |
+< #ADD: "+" > | < #SUB: "-" > | < #MUL: "*" > | < #DIV: "/" > | < #MOD: "%" > 
+}
+
+
+TOKEN : { < LOL : ( < MAIOR > | < MINI > | < IGUALZIN > | < DIFER > ) > |
+	< #MAIOR: ">" > | < #MINI: "<" > | < #IGUALZIN: "='=" > | < #DIFER: "<>" > 
+}
+
+TOKEN: { < VAR : "var_dump" > }
+
+TOKEN : { < ABREC : "{" >  }
+TOKEN : { < FECHAC : "}" >  }
+
+//Token começo e final de interação
+TOKEN : { < PARENTEA : "(" >  }
+TOKEN : { < PARENTEF : ")" >  }
+
+
+TOKEN : { < ASPAS : "'" >  }
+
+TOKEN :
+{
+  < UNIQUE : "//" (~["\n" , "\r"])* ("\n" | "\r" | "\r\n" | "") >
+}
+
+TOKEN :
+{
+  < MANY : "/*" (~["*" , "/"])*  "*/" >
+}
+
+
+TOKEN : { < EOL : ";" >  }
+
+
+TOKEN : { < THIS : "this" >  }
+
+
+
+TOKEN : { < TIPO : (< INT > | < STRING > | < BYTE > | < SHORT > | < LONG > |
+		  < FLOAT > | < DOUBLE > | < CHAR > | < BOOLEAN > ) > |
+	< #INT : "int" > | < #STRING : "String" > | < #BYTE : "byte" > |
+	< #SHORT : "short" > | < #LONG : "long" > | < #FLOAT : "float" > |
+	< #DOUBLE : "double" > | < #CHAR : "char" > | < #BOOLEAN : "boolean" > 
+}
+
+
+TOKEN: { < BOOL: ( < TRUE > | < FALSE > ) > | < #TRUE: "true" > | < #FALSE: "false" >  }
+
+
+TOKEN : { < ATRI : "<=" > }
+
+
+
+TOKEN : { < LITERALS : < L >(< L >|< D >|"_")* > }
+
+
+TOKEN : { < VALUES : < D >( < D > )* | < LITERALS > > }
+
+TOKEN : { < ASPTRING : < ASPAS > ( < LITERALS > | " " ) < ASPAS > > }
+
+
+
+
+
+
+void Start() : {} {
+  ( COMANDOS() )  < EOF >
+}
+
+
+void COMANDOS(): { } {
+  ( WHILE() | Saida() | IF() | SWITCH() | COMENTARIO() | ChamadaDeProced() | Procedimento()| atribu() | FOR() | expreArit() | VARDUMP()| VAISEGURANDO() | ARQENTRY()) *
+}
+
+void COMENTARIO(): {} {
+  (
+   	(< UNIQUE > | < MANY >)+
+   	
+  )
+}
+
+void ELSEIF(): { } {
+  ( <PARENTEA > ExpreBool() < PARENTEF > < ABREC > ( COMANDOS() ) <FECHAC > ) *
+}
+void IF(): { } {
+  ( < IF > ELSEIF() ( < ELSEIF > ELSEIF() ) * ( < ELSE > < ABREC > ( COMANDOS() ) <FECHAC > ) * )
+}
+
+
+void Saida(): { } {
+  (< SAIDA > < PARENTEA > < LITERALS > < PARENTEF > < EOL > )
+}
+
+void ChamadaDeProced(): { } {
+  ( < THIS >< PONTO >< FUNCAO > < PONTO > < LITERALS > < PARENTEA > < LITERALS > < PARENTEF > < EOL > )
+}
+
+void Procedimento(): { } {
+  ( < FUNCAO > < LITERALS > < PARENTEA > < LITERALS > < PARENTEF > <ABREC > ( COMANDOS() ) < FECHAC > )
+}
+
+
+void atribu(): {} {
+  ( < TIPO > < LITERALS > ( "," atribuRacio() | < ATRI > AtribuBOOL() ) * < EOL > )
+}
+void atribuRacio(): {} {
+  ( < LITERALS > | "," atribuRacio() ) +
+}
+void AtribuBOOL(): {} {
+  ( < VALUES > | < BOOL > | < RACIO > | < ASPTRING > ( "," < LITERALS > < ATRI > ( < VALUES > | < BOOL > | < RACIO > | < ASPTRING > ) ) * )
+} 
+
+
+void expreArit(): {} {
+  ( < LITERALS > < ATRI > ( < VALUES > | < RACIO > | < LITERALS > ) ( < OP > ( < VALUES > | < RACIO > | < LITERALS > ) ) * < EOL > ) 
+}
+
+
+void ExpreBool(): {} {
+  ( ( < VALUES > | < RACIO > | < LITERALS > ) < LOL > ( < VALUES > | < RACIO > | < LITERALS > ))*
+}
+
+
+void FOR(): { } {
+  ( < FOR > <PARENTEA > atribu() ExpreBool() < VIRGULA > expreArit() <PARENTEF > < ABREC > ( COMANDOS() ) <FECHAC > )
+}
+
+
+void WHILE(): { } {
+  ( < WHILE > < PARENTEA > ( ExpreBool() ) < PARENTEF > < ABREC > ( COMANDOS() ) <FECHAC > )
+}
+
+void CASE(): { } {
+  < CASE > < VALUES > <ABREC > ( COMANDOS() ) <BREAK > <EOL > < FECHAC > (CASE())?
+}
+void SWITCH(): { } {
+  < SWITCH > <PARENTEA > < LITERALS > < PARENTEF > <ABREC > ( CASE() ) < FECHAC >
+}
+
+void VARDUMP(): { } {
+  ( < VAR >< PARENTEA > < LITERALS > < PARENTEF > < EOL > )
+}
+
+void ARQENTRY(): { } {
+  ( < JOGALA >< PARENTEA > < LITERALS > < ATRI > < LITERALS > < PONTO > < TXT > < PARENTEF > < EOL > )
+}
+
+
+void VAISEGURANDO(): { } {
+  ( < ENTRADA >< PARENTEA > < LITERALS > < PARENTEF > < EOL > )
+}
+
+

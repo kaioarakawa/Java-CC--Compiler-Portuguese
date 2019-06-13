@@ -1,0 +1,70 @@
+// Declaracao
+int e;
+int a <= 1;
+String c,s <= 'ABCS';
+double e,b <= 2,3;
+
+
+procedimento nome(o){
+	a <= a + 1;
+}
+
+
+/*Exemplo vaisegurando*/ 
+vaisegurando(a <> 2){
+	sepa(a  ='= 8){
+		a <= a + 1;
+	}senaosepa(b ='= 5){
+		AS <= a + 5;
+	}senaopa{
+		r <= a + 87;
+	}
+}
+
+pegaavisao(b);
+
+vaisegurando(a <> 2){
+	vaisegurando(a ='= 4){
+		b <= 2;
+	}
+}
+
+//funcao 
+this.procedimento.nome(o);
+
+jogala(o<=arquivo.txt);
+
+
+//exemplo logoali 
+logoali(int i <= 1; i < 10, i <= i + 1;){
+	sepa(a ='= 5){
+		b <= 2;
+	}
+	
+}
+
+//switch 
+switch(d){
+	case 1 {
+		double h <= 10;
+		mostra(h);
+		break;
+	}case 2 {
+		double h <= 20;
+		mostra(h);
+		break;
+	}case 3 {
+		double h <= 20;
+		mostra(h);
+		break;
+	}
+}
+
+//Calculos 
+result <=  5 / 10 - 2 + a + b * c ;
+asd<=12;
+//exemplo vardump
+var_dump(abc);
+
+
+
